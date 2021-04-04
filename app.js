@@ -18,8 +18,13 @@ sanDiegoBtn.addEventListener('click', () => {
   fetchForecast('32.89175761527285','-117.25357949748246', 'Black\'s beach');
 })
 
+let loadingContainer = document.querySelector('.loading-container');
+
 
 const fetchForecast = async (lat, lon, spotName) => {
+  loadingContainer.classList.toggle('visually-hidden');
+  let cardContainer = document.getElementById('card-container');
+  cardContainer.innerHTML = ''
   let apiUrl = `https://api.worldweatheronline.com/premium/v1/marine.ashx?key=4361ead8c2274f4ba4221736210304&q=${lat},${lon}&format=json`
   try {
     // fetch the raw response
@@ -57,18 +62,15 @@ const fetchForecast = async (lat, lon, spotName) => {
       generateCard(weatherObj, swellObj, spotName, i);
     }
 
-
-    // console.log(weatherObj)
-    // console.log(swellObj)
-
   } catch (err) {
     console.log('err', err);
   }
+  loadingContainer.classList.toggle('visually-hidden');
 };
 
 const generateCard = (weatherObj, swellObj, spotName, time) => {
   let forecastTime = time === 2 ? 'Morning' : 'Afternoon'
-  let mainContainer = document.getElementById('mainContainer');
+  let cardContainer = document.getElementById('card-container');
   let cardDiv = document.createElement('div');
   cardDiv.innerHTML = `
     <div class="card mb-5" style="width: 45%">
@@ -109,7 +111,9 @@ const generateCard = (weatherObj, swellObj, spotName, time) => {
       </div>
     </div>
   `
-  mainContainer.appendChild(cardDiv);
+  cardContainer.appendChild(cardDiv);
 }
+
+// fetchForecast('33.902925','-118.420773', 'El Porto');
 
 

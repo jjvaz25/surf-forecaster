@@ -64,7 +64,12 @@
       <button id="sanDiego" type="button" class="btn btn-primary mx-3 my-1">San Diego</button>
     </nav>
 
-    <div id="mainContainer" class="container text-muted">
+    <div id="mainContainer" class="container text-muted text-center">
+      <div class="loading-container container text-center visually-hidden">
+        <h2 class="my-4">Loading your forecast...</h2>
+        <div class="spinner-border" role="status"></div>
+      </div>
+      <div id="card-container"></div>
       <!-- <div class="card mb-5" style="width: 45%">
         <div class="container">
           <div class="row g-2">
