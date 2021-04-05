@@ -20,7 +20,6 @@ sanDiegoBtn.addEventListener('click', () => {
 
 let loadingContainer = document.querySelector('.loading-container');
 
-
 const fetchForecast = async (lat, lon, spotName) => {
   loadingContainer.classList.toggle('visually-hidden');
   let cardContainer = document.getElementById('card-container');
@@ -107,6 +106,9 @@ const generateCard = (weatherObj, swellObj, spotName, time) => {
             <p>Sunrise: ${weatherObj.sunrise}</p>
             <p>Sunset: ${weatherObj.sunset}</p>
           </div>
+        </div>
+        <div class="row g-2">
+          <button type="button" class="btn btn-primary mb-2">Save Session</button>
         </div>
       </div>
     </div>
