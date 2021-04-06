@@ -1,3 +1,22 @@
+/* --------------  FIREBASE STUFF ----------------------- */
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBLzpiG0nkFkXH9QJd3IujWj72uP4sWXls",
+  authDomain: "surf-forecaster-v1.firebaseapp.com",
+  projectId: "surf-forecaster-v1",
+  storageBucket: "surf-forecaster-v1.appspot.com",
+  messagingSenderId: "280270213054",
+  appId: "1:280270213054:web:dfbdfd2027b362e529f3ef"
+};
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+
+const db = firebase.firestore();
+
+/* -------------- END FIREBASE STUFF ----------------------- */
+
+let incrementor = 0;
+
 let elPortoBtn = document.getElementById('elPorto');
 elPortoBtn.addEventListener('click', () => {
   fetchForecast('33.902925','-118.420773', 'El Porto');
@@ -39,7 +58,6 @@ const fetchForecast = async (lat, lon, spotName) => {
     }
 
     const jsonResponse = await rawResponse.json();
-    console.log(jsonResponse);
 
     for (let i = 2; i <= 5; i+=3) {
       let weatherData = jsonResponse.data.weather[0].hourly[i]
@@ -58,8 +76,10 @@ const fetchForecast = async (lat, lon, spotName) => {
         windSpeed: weatherData.windspeedMiles,
         windDir: weatherData.winddir16Point,
       }
-      generateCard(weatherObj, swellObj, spotName, i);
+      generateCard(weatherObj, swellObj, spotName, i, incrementor);
+      incrementor += 1;
     }
+
 
   } catch (err) {
     console.log('err', err);
@@ -67,8 +87,8 @@ const fetchForecast = async (lat, lon, spotName) => {
   loadingContainer.classList.toggle('visually-hidden');
 };
 
-const generateCard = (weatherObj, swellObj, spotName, time) => {
-  let forecastTime = time === 2 ? 'Morning' : 'Afternoon'
+const generateCard = (weatherObj, swellObj, spotName, timeOfDay, uniqueId) => {
+  let forecastTime = timeOfDay === 2 ? 'Morning' : 'Afternoon'
   let cardContainer = document.getElementById('card-container');
   let cardDiv = document.createElement('div');
   cardDiv.innerHTML = `
@@ -82,7 +102,7 @@ const generateCard = (weatherObj, swellObj, spotName, time) => {
           </div>
           <div class="col-5 my-auto">
             <div class="card-img-body">
-              <img class="card-img" src="/assets/images/clearsky.png" alt="">
+              <img class="card-img" src="${weatherObj.icon}" alt="">
             </div>
             <h6>${weatherObj.description}</h6>
           </div>
@@ -108,13 +128,25 @@ const generateCard = (weatherObj, swellObj, spotName, time) => {
           </div>
         </div>
         <div class="row g-2">
-          <button type="button" class="btn btn-primary mb-2">Save Session</button>
+          <button id="sessionNum${uniqueId}" type="button" class="btn btn-primary mb-2">Save Session</button>
         </div>
       </div>
     </div>
   `
   cardContainer.appendChild(cardDiv);
+  document.getElementById(`sessionNum${uniqueId}`).addEventListener('click', (e) => {
+    db.collection('swellReport').add({
+      location: spotName,
+      swellDir: swellObj.swellDir,
+      swellHeight: swellObj.swellHeight,
+      swellPeriod: swellObj.swellPeriod,
+      windDir: swellObj.windDir,
+      windSpeed: swellObj.windSpeed,
+      timeOfDay: forecastTime
+    })
+  })
 }
+
 
 // fetchForecast('33.902925','-118.420773', 'El Porto');
 
