@@ -17,6 +17,11 @@ const db = firebase.firestore();
 
 let incrementor = 0;
 
+let favSessionsBtn = document.querySelector('.favorite-sessions')
+favSessionsBtn.addEventListener('click', () => {
+  getSavedSessions();
+})
+
 let elPortoBtn = document.getElementById('elPorto');
 elPortoBtn.addEventListener('click', () => {
   fetchForecast('33.902925','-118.420773', 'El Porto');
@@ -38,6 +43,11 @@ sanDiegoBtn.addEventListener('click', () => {
 })
 
 let loadingContainer = document.querySelector('.loading-container');
+
+const deleteSession = (id) => {
+  // find message whose objectId is equal to the id we're searching with
+  return db.collection('swellReport').doc(id).delete();
+}
 
 const fetchForecast = async (lat, lon, spotName) => {
   loadingContainer.classList.toggle('visually-hidden');
@@ -147,7 +157,68 @@ const generateCard = (weatherObj, swellObj, spotName, timeOfDay, uniqueId) => {
   })
 }
 
+const getSavedSessions = async () => {
+  const data = await db.collection('swellReport').get();
 
-// fetchForecast('33.902925','-118.420773', 'El Porto');
+  // transform to a more useful format
+  const reports = data.docs.map((doc) => {
+    // below combines the document id with all properties returned by doc.data()
+    return {
+      id: doc.id,
+      ...doc.data()
+    };
+  });
+  generateSavedSessions(reports);
+  // return reports;
+};
+
+const generateSavedSessions = (reports) => {
+  const listContainer = document.getElementById('report-container');
+  listContainer.innerHTML = '';
+  reports.forEach((report) => {
+    listContainer.innerHTML += `
+    <div class="card mb-2 mx-2" style="width: 18rem;">
+      <div class="card-body">
+        <h5 class="card-title">${report.location}</h5>
+        <h6>${report.timeOfDay} forecast</h6>
+        <p>Swell: ${report.swellHeight}ft @ ${report.swellPeriod}s ${report.swellDir}</p>
+        <p>Wind: ${report.windSpeed}mph ${report.windDir}</p>
+        <button id="${report.id}" type="button" class="btn btn-danger"><i class="fa fa-trash" aria-hidden="true"></i></button>
+      </div>
+    </div>`;
+    // document.getElementById(`delete-${report.id}`).addEventListener('click', (e) => {
+    //   console.log(e)
+    // })
+    // var deleteBtn = document.createElement('button');
+    // deleteBtn.id = `delete-${report.id}`
+    // deleteBtn.type = 'button'
+    // deleteBtn.classList.add('btn');
+    // deleteBtn.classList.add('btn-danger');
+    // deleteBtn.innerText = 'delete';
+    // deleteBtn.addEventListener("click", function(e) {
+
+    // })
+    // document.querySelector(`.${report.id}`).appendChild(deleteBtn);
+  });
+  //loop through delete buttons
+  //or event delegation
+  document.querySelectorAll('.btn-danger').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      console.log(e.target.id)
+      deleteSession(e.target.id)
+    })
+  })
+}
+
+
+// const generateTrashIcon = (button) => {
+//   let trashIcon = document.createElement('i');
+//   trashIcon.classList.add('fa');
+//   trashIcon.classList.add('fa-trash');
+//   trashIcon.setAttribute('aria-hidden', 'true');
+//   button.appendChild(trashIcon);
+// }
+
+// document.querySelectorAll('btn-danger');
 
 
