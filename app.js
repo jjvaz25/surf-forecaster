@@ -17,6 +17,8 @@ const db = firebase.firestore();
 
 let incrementor = 0;
 
+/* -------------- BUTTON VARIABLES ----------------------- */
+
 let favSessionsBtn = document.querySelector('.favorite-sessions')
 favSessionsBtn.addEventListener('click', () => {
   getSavedSessions();
@@ -43,6 +45,9 @@ sanDiegoBtn.addEventListener('click', () => {
 })
 
 let loadingContainer = document.querySelector('.loading-container');
+
+
+/* -------------- FUNCTIONS ----------------------- */
 
 const deleteSession = (id) => {
   // find message whose objectId is equal to the id we're searching with
@@ -112,7 +117,7 @@ const generateCard = (weatherObj, swellObj, spotName, timeOfDay, uniqueId) => {
           </div>
           <div class="col-5 my-auto">
             <div class="card-img-body">
-              <img class="card-img" src="${weatherObj.icon}" alt="">
+              <img class="card-img mt-3 mb-1 mr-3" src="${weatherObj.icon}" alt="">
             </div>
             <h6>${weatherObj.description}</h6>
           </div>
@@ -173,11 +178,12 @@ const getSavedSessions = async () => {
 };
 
 const generateSavedSessions = (reports) => {
+  document.getElementById('favoriteSessionsH1').classList.toggle('visually-hidden');
   const listContainer = document.getElementById('report-container');
   listContainer.innerHTML = '';
   reports.forEach((report) => {
     listContainer.innerHTML += `
-    <div class="card mb-2 mx-2" style="width: 18rem;">
+    <div class="card mb-2 mx-auto w-50" style="width: 18rem;">
       <div class="card-body">
         <h5 class="card-title">${report.location}</h5>
         <h6>${report.timeOfDay} forecast</h6>
@@ -186,22 +192,7 @@ const generateSavedSessions = (reports) => {
         <button id="${report.id}" type="button" class="btn btn-danger"><i class="fa fa-trash" aria-hidden="true"></i></button>
       </div>
     </div>`;
-    // document.getElementById(`delete-${report.id}`).addEventListener('click', (e) => {
-    //   console.log(e)
-    // })
-    // var deleteBtn = document.createElement('button');
-    // deleteBtn.id = `delete-${report.id}`
-    // deleteBtn.type = 'button'
-    // deleteBtn.classList.add('btn');
-    // deleteBtn.classList.add('btn-danger');
-    // deleteBtn.innerText = 'delete';
-    // deleteBtn.addEventListener("click", function(e) {
-
-    // })
-    // document.querySelector(`.${report.id}`).appendChild(deleteBtn);
   });
-  //loop through delete buttons
-  //or event delegation
   document.querySelectorAll('.btn-danger').forEach((btn) => {
     btn.addEventListener('click', (e) => {
       console.log(e.target.id)
@@ -209,16 +200,4 @@ const generateSavedSessions = (reports) => {
     })
   })
 }
-
-
-// const generateTrashIcon = (button) => {
-//   let trashIcon = document.createElement('i');
-//   trashIcon.classList.add('fa');
-//   trashIcon.classList.add('fa-trash');
-//   trashIcon.setAttribute('aria-hidden', 'true');
-//   button.appendChild(trashIcon);
-// }
-
-// document.querySelectorAll('btn-danger');
-
 
